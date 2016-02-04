@@ -1,9 +1,20 @@
 // Create the canvas
+var w = window;
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 480;
+canvas.width = w.innerWidth;
+canvas.height = w.innerHeight;
 document.body.appendChild(canvas);
+
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+ctx.translate(canvas.width/2, canvas.height/2);
+
+// default styles
+ctx.fillStyle = "#000000";
+ctx.font = "24px Helvetica";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
 
 // #######################################################
 var PADDING = 20;
@@ -28,16 +39,19 @@ Matrix.prototype.draw = function(x,y) {
 };
 // MAIN LOOP STUFF ########################################
 
-
+var drawBG = function() {
+    ctx.save();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+}
 
 // Draw everything
 var render = function () {
-    ctx.fillStyle = "#000000";
-    ctx.font = "24px Helvetica";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    drawBG();
     var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]]);
-    m.draw(100,100);
+    m.draw(100, 100);
+    ctx.rotate(0.01)
 };
 
 // The main game loop
@@ -54,7 +68,6 @@ var main = function () {
     requestAnimationFrame(main);
 };
 
-var w = window;
-requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
 var then = Date.now();
 main();
