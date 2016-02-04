@@ -5,10 +5,36 @@ canvas.width = 512;
 canvas.height = 480;
 document.body.appendChild(canvas);
 
+// #######################################################
+var PADDING = 20;
+
+function Matrix(rows, columns, values) {
+    this.rows = rows;
+    this.columns = columns;
+    this.values = values;
+
+    return {
+        drawNums : function(x,y) {
+            for(i = 0; i < this.rows; i++) {
+                for(j = 0; j < this.columns; j++) {
+                    ctx.fillText(this.values[i][j], x + i*PADDING, y + j*PADDING);
+                    console.log(x + i*PADDING, y + j*PADDING);
+                    console.log("fker");
+                }
+            }
+        }
+    }
+};
+
+// MAIN LOOP STUFF ########################################
+
+
+
 // Draw everything
 var render = function () {
-    ctx.fillStyle = "#FF55A0";
-    ctx.fillRect(0,0,150,75);
+    ctx.fillStyle = "#000000";
+    var m = new Matrix(2,2,[[1,0],[2,3]]);
+    m.drawNums(100,100);
 };
 
 // The main game loop
