@@ -12,20 +12,15 @@ function Matrix(rows, columns, values) {
     this.rows = rows;
     this.columns = columns;
     this.values = values;
+};
 
-    return {
-        drawNums : function(x,y) {
-            for(i = 0; i < this.rows; i++) {
-                for(j = 0; j < this.columns; j++) {
-                    ctx.fillText(this.values[i][j], x + i*PADDING, y + j*PADDING);
-                    console.log(x + i*PADDING, y + j*PADDING);
-                    console.log("fker");
-                }
-            }
+Matrix.prototype.drawNums = function(x,y) {
+    for(i = 0; i < this.rows; i++) {
+        for(j = 0; j < this.columns; j++) {
+            ctx.fillText(this.values[i][j], x + i*PADDING, y + j*PADDING);
         }
     }
 };
-
 // MAIN LOOP STUFF ########################################
 
 
@@ -34,6 +29,7 @@ function Matrix(rows, columns, values) {
 var render = function () {
     ctx.fillStyle = "#000000";
     var m = new Matrix(2,2,[[1,0],[2,3]]);
+    ctx.fillRect(100,100)
     m.drawNums(100,100);
 };
 
