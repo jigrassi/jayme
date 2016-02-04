@@ -14,12 +14,17 @@ function Matrix(rows, columns, values) {
     this.values = values;
 };
 
-Matrix.prototype.drawNums = function(x,y) {
+Matrix.prototype.draw = function(x,y) {
+    // draw numbers
     for(i = 0; i < this.rows; i++) {
+        ctx.fillRect(x, y + i*PADDING*2, this.columns*PADDING*2, 3);
         for(j = 0; j < this.columns; j++) {
-            ctx.fillText(this.values[i][j], x + i*PADDING, y + j*PADDING);
+            ctx.fillRect(x + j*PADDING*2, y, 3, this.rows*PADDING*2);
+            ctx.fillText(this.values[i][j], x + i*PADDING*2 + PADDING, y + j*PADDING*2 + PADDING);
         }
     }
+    ctx.fillRect(x, y + this.rows*PADDING*2, this.columns*PADDING*2, 3);
+    ctx.fillRect(x + this.rows*PADDING*2, y, 3, this.columns*PADDING*2);
 };
 // MAIN LOOP STUFF ########################################
 
@@ -28,9 +33,11 @@ Matrix.prototype.drawNums = function(x,y) {
 // Draw everything
 var render = function () {
     ctx.fillStyle = "#000000";
-    var m = new Matrix(2,2,[[1,0],[2,3]]);
-    ctx.fillRect(100,100)
-    m.drawNums(100,100);
+    ctx.font = "24px Helvetica";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]]);
+    m.draw(100,100);
 };
 
 // The main game loop
