@@ -141,9 +141,8 @@ function drawMatrices() {
 var render = function () {
     drawBG();
     var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]], 0, 0);
-    console.log(m);
-    m.draw();
-    //drawMatrices();
+    //m.draw();
+    drawMatrices();
     //ctx.rotate(0.01)
 };
 
@@ -160,7 +159,7 @@ function genMatrixVals(size) {
 
 function init() {
   for(var i = 0; i < N; i++) {
-    ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), 15*i, 15*i));
+    ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), -400 + 80*i, -400 + 80*i));
   }
 }
 
