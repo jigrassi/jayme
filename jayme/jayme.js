@@ -96,11 +96,11 @@ Ctrl.prototype.select = function(x,y) {
 // calculate position of the canvas DOM element on the page
 
 var canvasPosition = {
-    x: canvas.offset().left,
-    y: canvas.offset().top
+    x: canvas.offsetLeft,
+    y: canvas.offsetTop
 };
 
-canvas.on('click', function(e) {
+canvas.click(function(e) {
 
     // use pageX and pageY to get the mouse position
     // relative to the browser window
@@ -129,8 +129,28 @@ var render = function () {
     drawBG();
     var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]]);
     m.draw(100, 100);
-    ctx.rotate(0.01)
+    //ctx.rotate(0.01)
 };
+
+function genMatrixVals(size) {
+  var m = [];
+  for(k = 0; k < size; k++) {
+    m.push([]);
+    for(j = 0; j < size; j++) {
+      m[k].push(Math.floor(Math.random()*5)-1);
+    }
+  }
+  console.log(m)
+  return m;
+}
+
+function init() {
+  console.log('hi!')
+  for(i = 0; i < N; i++) {
+    console.log(i)
+    ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), 15*i, 15*i));
+  }
+}
 
 // The main game loop
 var main = function () {
@@ -146,6 +166,9 @@ var main = function () {
     requestAnimationFrame(main);
 };
 
-
+var N = 8;
+var SIZE = 2;
+ctrl = new Ctrl([], SIZE);
 var then = Date.now();
-main();
+init();
+//main();
