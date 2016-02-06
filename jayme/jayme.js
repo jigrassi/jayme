@@ -16,7 +16,7 @@ ctx.font = "24px Helvetica";
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
 
-// #######################################################
+// MATRIX #######################################################
 var PADDING = 20;
 
 function Matrix(rows, columns, values) {
@@ -66,7 +66,32 @@ Matrix.prototype.draw = function(x,y) {
     ctx.fillRect(x, y + this.rows*PADDING*2, this.columns*PADDING*2, 3);
     ctx.fillRect(x + this.rows*PADDING*2, y, 3, this.columns*PADDING*2);
 };
-// MAIN LOOP STUFF ########################################
+
+// CLICKING #######################################################
+
+// calculate position of the canvas DOM element on the page
+
+var canvasPosition = {
+    x: canvas.offset().left,
+    y: canvas.offset().top
+};
+
+canvas.on('click', function(e) {
+
+    // use pageX and pageY to get the mouse position
+    // relative to the browser window
+
+    var mouse = {
+        x: e.pageX - canvasPosition.x,
+        y: e.pageY - canvasPosition.y
+    }
+
+    // now you have local coordinates,
+    // which consider a (0,0) origin at the
+    // top-left of canvas element
+});
+
+// MAIN LOOP STUFF ##############################################
 
 var drawBG = function() {
     ctx.save();
