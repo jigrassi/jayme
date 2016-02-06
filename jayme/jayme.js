@@ -25,6 +25,35 @@ function Matrix(rows, columns, values) {
     this.values = values;
 };
 
+// returns a new matrix
+Matrix.prototype.mult = function(other) {
+    if (this.columns != other.rows) {
+        throw "error: incompatible sizes";
+    }
+ 
+    var result = [];
+    for (var i = 0; i < this.rows; i++) {
+        result[i] = [];
+        for (var j = 0; j < other.columns; j++) {
+            var sum = 0;
+            for (var k = 0; k < this.columns; k++) {
+                sum += this.values[i][k] * other.values[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+    return new Matrix(result); 
+}
+
+Matrix.prototype.trace = function() {
+    var result = 0;
+    for (var i = 0; i < this.rows; i++) {
+        result += this.values[i][i];
+    }
+    return result;
+}
+ 
+
 Matrix.prototype.draw = function(x,y) {
     // draw numbers
     for(i = 0; i < this.rows; i++) {
