@@ -19,25 +19,25 @@ ctx.textBaseline = "middle";
 // MATRIX #######################################################
 var PADDING = 20;
 
-function Matrix(rows, columns, values) {
+function Matrix(rows, cols, vals) {
     this.rows = rows;
-    this.columns = columns;
-    this.values = values;
+    this.cols = cols;
+    this.vals = vals;
 };
 
 // returns a new matrix
 Matrix.prototype.mult = function(other) {
-    if (this.columns != other.rows) {
+    if (this.cols != other.rows) {
         throw "error: incompatible sizes";
     }
  
     var result = [];
     for (var i = 0; i < this.rows; i++) {
         result[i] = [];
-        for (var j = 0; j < other.columns; j++) {
+        for (var j = 0; j < other.cols; j++) {
             var sum = 0;
-            for (var k = 0; k < this.columns; k++) {
-                sum += this.values[i][k] * other.values[k][j];
+            for (var k = 0; k < this.cols; k++) {
+                sum += this.vals[i][k] * other.vals[k][j];
             }
             result[i][j] = sum;
         }
@@ -48,25 +48,49 @@ Matrix.prototype.mult = function(other) {
 Matrix.prototype.trace = function() {
     var result = 0;
     for (var i = 0; i < this.rows; i++) {
-        result += this.values[i][i];
+        result += this.vals[i][i];
     }
     return result;
 }
- 
 
 Matrix.prototype.draw = function(x,y) {
     // draw numbers
     for(i = 0; i < this.rows; i++) {
-        ctx.fillRect(x, y + i*PADDING*2, this.columns*PADDING*2, 3);
-        for(j = 0; j < this.columns; j++) {
+        ctx.fillRect(x, y + i*PADDING*2, this.cols*PADDING*2, 3);
+        for(j = 0; j < this.cols; j++) {
             ctx.fillRect(x + j*PADDING*2, y, 3, this.rows*PADDING*2);
-            ctx.fillText(this.values[i][j], x + i*PADDING*2 + PADDING, y + j*PADDING*2 + PADDING);
+            ctx.fillText(this.vals[i][j], x + i*PADDING*2 + PADDING, y + j*PADDING*2 + PADDING);
         }
     }
-    ctx.fillRect(x, y + this.rows*PADDING*2, this.columns*PADDING*2, 3);
-    ctx.fillRect(x + this.rows*PADDING*2, y, 3, this.columns*PADDING*2);
+    ctx.fillRect(x, y + this.rows*PADDING*2, this.cols*PADDING*2, 3);
+    ctx.fillRect(x + this.rows*PADDING*2, y, 3, this.cols*PADDING*2);
 };
 
+// MATRIX CONTROL ##################################################
+function Ctrl(matrices, size) {
+  this.matrices = matrices;
+  this.m_size = size;
+};
+
+Ctrl.prototype.push = function(matrix) {
+  this.matrices.push(matrix);
+};
+
+Ctrl.prototype.pop = function(index) {
+  index = index || 0
+  this.matrices.splice(index,1)
+};
+
+Ctrl.prototype.select = function(x,y) {
+  for(i = 0; i < this.matrices.length; i++) {
+    if(x >= this.matrices[i].posx
+      && x <= this.matrices[i].posx + WIDTH*this.m_size
+      && y >= this.matrices[i].posy
+      && y <= this.matrices[i].posy + WIDTH*this.m_size) {
+      return i;
+    }
+  }
+};
 // CLICKING #######################################################
 
 // calculate position of the canvas DOM element on the page
