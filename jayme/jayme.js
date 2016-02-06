@@ -115,14 +115,24 @@ canvas.click(function(e) {
     // top-left of canvas element
 });
 
-// MAIN LOOP STUFF ##############################################
+// VIEWS ######################################################
 
+// background
 var drawBG = function() {
     ctx.save();
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
 }
+
+// matrices
+function drawMatrices() {
+  for(i = 0; i < ctrl.matrices.length; i++) {
+    ctrl.matrices[i].draw();
+  }
+};
+
+// MAIN LOOP STUFF ##############################################
 
 // Draw everything
 var render = function () {
