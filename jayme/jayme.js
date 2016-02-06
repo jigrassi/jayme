@@ -19,10 +19,12 @@ ctx.textBaseline = "middle";
 // MATRIX #######################################################
 var PADDING = 20;
 
-function Matrix(rows, cols, vals) {
+function Matrix(rows, cols, vals, posx, posy) {
     this.rows = rows;
     this.cols = cols;
     this.vals = vals;
+    this.posx = posx;
+    this.posy = posy;
 };
 
 // returns a new matrix
@@ -55,9 +57,9 @@ Matrix.prototype.trace = function() {
 
 Matrix.prototype.draw = function() {
     // draw numbers
-    for(i = 0; i < this.rows; i++) {
+    for(var i = 0; i < this.rows; i++) {
         ctx.fillRect(this.posx, this.posy + i*PADDING*2, this.cols*PADDING*2, 3);
-        for(j = 0; j < this.cols; j++) {
+        for(var j = 0; j < this.cols; j++) {
             ctx.fillRect(this.posx + j*PADDING*2, this.posy, 3, this.rows*PADDING*2);
             ctx.fillText(this.vals[i][j], this.posx + i*PADDING*2 + PADDING, this.posy + j*PADDING*2 + PADDING);
         }
@@ -82,7 +84,7 @@ Ctrl.prototype.pop = function(index) {
 };
 
 Ctrl.prototype.select = function(x,y) {
-  for(i = 0; i < this.matrices.length; i++) {
+  for(var i = 0; i < this.matrices.length; i++) {
     if(x >= this.matrices[i].posx
       && x <= this.matrices[i].posx + WIDTH*this.m_size
       && y >= this.matrices[i].posy
@@ -127,7 +129,8 @@ var drawBG = function() {
 
 // matrices
 function drawMatrices() {
-  for(i = 0; i < ctrl.matrices.length; i++) {
+  for(var i = 0; i < ctrl.matrices.length; i++) {
+    console.log(i)
     ctrl.matrices[i].draw();
   }
 };
@@ -137,27 +140,26 @@ function drawMatrices() {
 // Draw everything
 var render = function () {
     drawBG();
-    var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]]);
-    m.draw(100, 100);
+    var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]], 0, 0);
+    console.log(m);
+    m.draw();
+    //drawMatrices();
     //ctx.rotate(0.01)
 };
 
 function genMatrixVals(size) {
   var m = [];
-  for(k = 0; k < size; k++) {
+  for(var k = 0; k < size; k++) {
     m.push([]);
     for(j = 0; j < size; j++) {
       m[k].push(Math.floor(Math.random()*5)-1);
     }
   }
-  console.log(m)
   return m;
 }
 
 function init() {
-  console.log('hi!')
-  for(i = 0; i < N; i++) {
-    console.log(i)
+  for(var i = 0; i < N; i++) {
     ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), 15*i, 15*i));
   }
 }
@@ -181,4 +183,4 @@ var SIZE = 2;
 ctrl = new Ctrl([], SIZE);
 var then = Date.now();
 init();
-//main();
+main();
