@@ -53,17 +53,17 @@ Matrix.prototype.trace = function() {
     return result;
 }
 
-Matrix.prototype.draw = function(x,y) {
+Matrix.prototype.draw = function() {
     // draw numbers
     for(i = 0; i < this.rows; i++) {
-        ctx.fillRect(x, y + i*PADDING*2, this.cols*PADDING*2, 3);
+        ctx.fillRect(this.posx, this.posy + i*PADDING*2, this.cols*PADDING*2, 3);
         for(j = 0; j < this.cols; j++) {
-            ctx.fillRect(x + j*PADDING*2, y, 3, this.rows*PADDING*2);
-            ctx.fillText(this.vals[i][j], x + i*PADDING*2 + PADDING, y + j*PADDING*2 + PADDING);
+            ctx.fillRect(this.posx + j*PADDING*2, this.posy, 3, this.rows*PADDING*2);
+            ctx.fillText(this.vals[i][j], this.posx + i*PADDING*2 + PADDING, this.posy + j*PADDING*2 + PADDING);
         }
     }
-    ctx.fillRect(x, y + this.rows*PADDING*2, this.cols*PADDING*2, 3);
-    ctx.fillRect(x + this.rows*PADDING*2, y, 3, this.cols*PADDING*2);
+    ctx.fillRect(this.posx, this.posy + this.rows*PADDING*2, this.cols*PADDING*2, 3);
+    ctx.fillRect(this.posx + this.rows*PADDING*2, this.posy, 3, this.cols*PADDING*2);
 };
 
 // MATRIX CONTROL ##################################################
