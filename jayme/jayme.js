@@ -10,7 +10,7 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 w.onload = function() {
   prepareEventHandlers();
-}
+};
 
 // default styles
 ctx.fillStyle = "#000000";
