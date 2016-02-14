@@ -1,4 +1,4 @@
-// Create the canvas
+  // Create the canvas
 var w = window;
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -8,7 +8,9 @@ document.body.appendChild(canvas);
 
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-ctx.translate(canvas.width/2, canvas.height/2);
+w.onload = function() {
+  prepareEventHandlers();
+}
 
 // default styles
 ctx.fillStyle = "#000000";
@@ -18,6 +20,8 @@ ctx.textBaseline = "middle";
 
 // MATRIX #######################################################
 var PADDING = 20;
+var WIDTH = PADDING*2;
+var BORDER_WIDTH = 3;
 
 function Matrix(rows, cols, vals, posx, posy) {
     this.rows = rows;
@@ -27,12 +31,11 @@ function Matrix(rows, cols, vals, posx, posy) {
     this.posy = posy;
 };
 
-// returns a new matrix
 Matrix.prototype.mult = function(other) {
     if (this.cols != other.rows) {
         throw "error: incompatible sizes";
     }
- 
+
     var result = [];
     for (var i = 0; i < this.rows; i++) {
         result[i] = [];
@@ -44,7 +47,7 @@ Matrix.prototype.mult = function(other) {
             result[i][j] = sum;
         }
     }
-    return new Matrix(result); 
+    return new Matrix(result);
 }
 
 Matrix.prototype.trace = function() {
@@ -58,14 +61,15 @@ Matrix.prototype.trace = function() {
 Matrix.prototype.draw = function() {
     // draw numbers
     for(var i = 0; i < this.rows; i++) {
-        ctx.fillRect(this.posx, this.posy + i*PADDING*2, this.cols*PADDING*2, 3);
+        ctx.fillRect(this.posx, this.posy + i*PADDING*2, this.cols*PADDING*2, BORDER_WIDTH);
         for(var j = 0; j < this.cols; j++) {
-            ctx.fillRect(this.posx + j*PADDING*2, this.posy, 3, this.rows*PADDING*2);
+            ctx.fillRect(this.posx + j*PADDING*2, this.posy, BORDER_WIDTH, this.rows*PADDING*2);
             ctx.fillText(this.vals[i][j], this.posx + i*PADDING*2 + PADDING, this.posy + j*PADDING*2 + PADDING);
         }
     }
-    ctx.fillRect(this.posx, this.posy + this.rows*PADDING*2, this.cols*PADDING*2, 3);
-    ctx.fillRect(this.posx + this.rows*PADDING*2, this.posy, 3, this.cols*PADDING*2);
+    // + extra BORDER_WIDTH is needed to fill out the corner
+    ctx.fillRect(this.posx, this.posy + this.rows*PADDING*2, this.cols*PADDING*2+BORDER_WIDTH, BORDER_WIDTH);
+    ctx.fillRect(this.posx + this.rows*PADDING*2, this.posy, BORDER_WIDTH, this.cols*PADDING*2);
 };
 
 // MATRIX CONTROL ##################################################
@@ -93,29 +97,34 @@ Ctrl.prototype.select = function(x,y) {
     }
   }
 };
+
+Ctrl.prototype.arrange = function(f) {
+  // call the function rearrange matrices on the canvas
+  f(this.matrices);
+}
+
 // CLICKING #######################################################
 
-// calculate position of the canvas DOM element on the page
-
-var canvasPosition = {
+// called by window.onload, to make sure canvas is loaded before attaching listener
+function prepareEventHandlers() {
+  var canvasPosition = {
     x: canvas.offsetLeft,
     y: canvas.offsetTop
-};
+  };
 
-canvas.click(function(e) {
-
-    // use pageX and pageY to get the mouse position
-    // relative to the browser window
-
+  canvas.addEventListener('click', function(e) {
     var mouse = {
         x: e.pageX - canvasPosition.x,
         y: e.pageY - canvasPosition.y
-    }
+    };
 
-    // now you have local coordinates,
-    // which consider a (0,0) origin at the
-    // top-left of canvas element
-});
+    m_id = ctrl.select(mouse.x, mouse.y);
+
+    if(m_id || m_id == 0) {
+      ctrl.pop(m_id);
+    }
+  }, false);
+}
 
 // VIEWS ######################################################
 
@@ -129,10 +138,11 @@ var drawBG = function() {
 
 // matrices
 function drawMatrices() {
+  ctx.save();
   for(var i = 0; i < ctrl.matrices.length; i++) {
-    console.log(i)
     ctrl.matrices[i].draw();
   }
+  ctx.restore();
 };
 
 // MAIN LOOP STUFF ##############################################
@@ -140,10 +150,7 @@ function drawMatrices() {
 // Draw everything
 var render = function () {
     drawBG();
-    var m = new Matrix(3,3,[[1,0,4],[2,3,2],[1,1,1]], 0, 0);
-    //m.draw();
     drawMatrices();
-    //ctx.rotate(0.01)
 };
 
 function genMatrixVals(size) {
@@ -157,9 +164,9 @@ function genMatrixVals(size) {
   return m;
 }
 
-function init() {
+function init_matrices() {
   for(var i = 0; i < N; i++) {
-    ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), -400 + 80*i, -400 + 80*i));
+    ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), 80*i, 80*i));
   }
 }
 
@@ -181,5 +188,5 @@ var N = 8;
 var SIZE = 2;
 ctrl = new Ctrl([], SIZE);
 var then = Date.now();
-init();
+init_matrices();
 main();
