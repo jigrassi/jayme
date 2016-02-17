@@ -1,22 +1,16 @@
-define(['matrix'], function (Matrix) {
+define(['matrix','painter'], function (Matrix, painter) {
 
       // Create the canvas
     var w = window;
-    var canvas = document.createElement("canvas");
+    var canvas = document.getElementById("game");
     var ctx = canvas.getContext("2d");
     canvas.width = w.innerWidth;
     canvas.height = w.innerHeight;
-    document.body.appendChild(canvas);
+    painter.defaultStyles();
 
     requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
     if (document.readyState === "complete") { prepareEventHandlers(); }
-
-    // default styles
-    ctx.fillStyle = "#000000";
-    ctx.font = "24px Helvetica";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
 
     function Player(name) {
         this.name = name;
@@ -78,40 +72,15 @@ define(['matrix'], function (Matrix) {
         }, false);
     }
 
-    // VIEWS ######################################################
 
-    // background
-    function drawBG() {
-        ctx.save();
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
-    }
-
-    // matrices
-    function drawMatrices() {
-        ctx.save();
-        for(var i = 0; i < ctrl.matrices.length; i++) {
-            ctrl.matrices[i].draw(ctx);
-        }
-        ctx.restore();
-    };
-
-    function drawScores() {
-        ctx.fillText(ctrl.players[0].name, 100, 500);
-        ctx.fillText(ctrl.players[0].score, 100, 550);
-
-        ctx.fillText(ctrl.players[1].name, 300, 500);
-        ctx.fillText(ctrl.players[1].score, 300, 550);
-    }
 
     // MAIN LOOP STUFF ##############################################
 
     // Draw everything
     var render = function () {
-        drawBG();
-        drawMatrices();
-        drawScores();
+        painter.drawBG();
+        painter.drawMatrices(ctrl);
+        painter.drawScores(ctrl);
     };
 
     function genMatrixVals(size) {
@@ -141,7 +110,6 @@ define(['matrix'], function (Matrix) {
 
         then = now;
 
-        // Request to do this again ASAP
         requestAnimationFrame(main);
     };
 
