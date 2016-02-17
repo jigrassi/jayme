@@ -1,0 +1,30 @@
+{
+  "name": "jayme",
+  "version": "1.0.0",
+  "description": "Jayme is a mental math game where players face off 1v1, drafting matrices.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jigrassi/jayme.git"
+  },
+  "keywords": [
+    "matrix",
+    "game",
+    "trace"
+  ],
+  "author": "Yibo Duan, Adam Venis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jigrassi/jayme/issues"
+  },
+  "homepage": "https://github.com/jigrassi/jayme#readme",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
+    "express": "^4.13.4",
+    "requirejs": "^2.1.22"
+  }
+}
