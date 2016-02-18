@@ -19,12 +19,16 @@ define([],function() {
             ctx.restore();
         },
 
-        drawScores: function(ctrl) {
-            ctx.fillText(ctrl.players[0].name, 100, 500);
-            ctx.fillText(ctrl.players[0].score, 100, 550);
+        drawPlayerData: function(ctrl) {
+            ctx.fillText(ctrl.players[0].name, 250, 350);
+            ctrl.players[0].matrix.draw(ctx);
+            ctx.fillText(ctrl.players[0].matrix.trace(), 250, 550);
+            ctx.fillText(ctrl.players[0].score, 250, 600);
 
-            ctx.fillText(ctrl.players[1].name, 300, 500);
-            ctx.fillText(ctrl.players[1].score, 300, 550);
+            ctx.fillText(ctrl.players[1].name, 500, 350);
+            ctrl.players[1].matrix.draw(ctx);
+            ctx.fillText(ctrl.players[1].matrix.trace(), 500, 550);
+            ctx.fillText(ctrl.players[1].score, 500, 600);
         },
 
         defaultStyles: function() {

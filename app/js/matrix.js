@@ -26,7 +26,7 @@ define([], function(){
                 result[i][j] = sum;
             }
         }
-        return new Matrix(result);
+        this.vals = result;
     }
 
     Matrix.prototype.trace = function() {
@@ -40,15 +40,15 @@ define([], function(){
     Matrix.prototype.draw = function(ctx) {
         // draw numbers
         for(var i = 0; i < this.rows; i++) {
-            ctx.fillRect(this.posx, this.posy + i*PADDING*2, this.cols*PADDING*2, BORDER_WIDTH);
+            ctx.fillRect(this.posx, this.posy + i * PADDING * 2, this.cols * PADDING * 2, BORDER_WIDTH);
             for(var j = 0; j < this.cols; j++) {
-                ctx.fillRect(this.posx + j*PADDING*2, this.posy, BORDER_WIDTH, this.rows*PADDING*2);
-                ctx.fillText(this.vals[i][j], this.posx + i*PADDING*2 + PADDING, this.posy + j*PADDING*2 + PADDING);
+                ctx.fillRect(this.posx + j * PADDING * 2, this.posy, BORDER_WIDTH, this.rows * PADDING * 2);
+                ctx.fillText(this.vals[i][j], this.posx + i * PADDING * 2 + PADDING, this.posy + j * PADDING * 2 + PADDING);
             }
         }
         // + extra BORDER_WIDTH is needed to fill out the corner
-        ctx.fillRect(this.posx, this.posy + this.rows*PADDING*2, this.cols*PADDING*2+BORDER_WIDTH, BORDER_WIDTH);
-        ctx.fillRect(this.posx + this.rows*PADDING*2, this.posy, BORDER_WIDTH, this.cols*PADDING*2);
+        ctx.fillRect(this.posx, this.posy + this.rows * PADDING * 2, this.cols * PADDING * 2 + BORDER_WIDTH, BORDER_WIDTH);
+        ctx.fillRect(this.posx + this.rows * PADDING * 2, this.posy, BORDER_WIDTH, this.cols * PADDING * 2);
     };
 
     Matrix.WIDTH = PADDING*2;

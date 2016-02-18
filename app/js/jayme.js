@@ -14,6 +14,7 @@ define(['matrix','painter'], function (Matrix, painter) {
 
     function Player(name) {
         this.name = name;
+        this.matrix = new Matrix(SIZE, SIZE, [[1, 0], [0, 1]], 0, 0);
         this.score = 0;
     };
 
@@ -22,6 +23,7 @@ define(['matrix','painter'], function (Matrix, painter) {
         this.matrices = matrices;
         this.m_size = size;
         this.players = players;
+        this.turn = 0; // alternates between 0 and 1
     };
 
     Ctrl.prototype.push = function(matrix) {
@@ -36,9 +38,9 @@ define(['matrix','painter'], function (Matrix, painter) {
     Ctrl.prototype.select = function(x,y) {
         for(var i = 0; i < this.matrices.length; i++) {
             if(x >= this.matrices[i].posx
-                && x <= this.matrices[i].posx + Matrix.WIDTH*this.m_size
+                && x <= this.matrices[i].posx + Matrix.WIDTH * this.m_size
                 && y >= this.matrices[i].posy
-                && y <= this.matrices[i].posy + Matrix.WIDTH*this.m_size) {
+                && y <= this.matrices[i].posy + Matrix.WIDTH * this.m_size) {
                 return i;
             }
         }
@@ -67,12 +69,13 @@ define(['matrix','painter'], function (Matrix, painter) {
             m_id = ctrl.select(mouse.x, mouse.y);
 
             if(m_id || m_id == 0) {
+                console.log(ctrl.players[ctrl.turn].matrix);
+                ctrl.players[ctrl.turn].matrix.mult(ctrl.matrices[m_id]);
                 ctrl.pop(m_id);
+                ctrl.turn = (ctrl.turn + 1) % ctrl.players.length
             }
         }, false);
     }
-
-
 
     // MAIN LOOP STUFF ##############################################
 
@@ -80,7 +83,7 @@ define(['matrix','painter'], function (Matrix, painter) {
     var render = function () {
         painter.drawBG();
         painter.drawMatrices(ctrl);
-        painter.drawScores(ctrl);
+        painter.drawPlayerData(ctrl);
     };
 
     function genMatrixVals(size) {
@@ -88,16 +91,20 @@ define(['matrix','painter'], function (Matrix, painter) {
         for(var k = 0; k < size; k++) {
             m.push([]);
             for(j = 0; j < size; j++) {
-                m[k].push(Math.floor(Math.random()*5)-1);
+                m[k].push(Math.floor(Math.random() * 5) - 1);
             }
         }
         return m;
     }
 
-    function init_matrices() {
+    function genMatrices() {
+        var matrices = [];
+        var rowSize = Math.ceil(N / 2);
         for(var i = 0; i < N; i++) {
-            ctrl.matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE), 80*i, 80*i));
+            matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE),
+                          100 + 150 * (i % rowSize), 50 + 150 * Math.floor(i / rowSize)));
         }
+        return matrices;
     }
 
     // The main game loop
@@ -115,11 +122,15 @@ define(['matrix','painter'], function (Matrix, painter) {
 
     var N = 8;
     var SIZE = 2;
-    ctrl = new Ctrl([], SIZE, [new Player("Adam"), new Player("Yibo")]);
+    var players = [new Player("Adam"), new Player("Yibo")];
+    players[0].matrix.posx = 210;
+    players[0].matrix.posy = 400;
+    players[1].matrix.posx = 460;
+    players[1].matrix.posy = 400;
+    ctrl = new Ctrl(genMatrices(), SIZE, players);
     var then = Date.now();
 
     function run() {
-        init_matrices();
         main();
     }
 
