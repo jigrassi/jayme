@@ -4,8 +4,8 @@ define(['matrix','painter'], function (Matrix, painter) {
     var w = window;
     var canvas = document.getElementById("game");
     var ctx = canvas.getContext("2d");
-    canvas.width = w.innerWidth;
-    canvas.height = w.innerHeight;
+    canvas.width = 1024;
+    canvas.height = 768;
     painter.defaultStyles();
     var ctrl;   // main game object
 
@@ -34,8 +34,12 @@ define(['matrix','painter'], function (Matrix, painter) {
         ctrl.update(move);
     });
 
+    socket.on('dc', function() {
+        setState("dc");
+    })
+
     // MATRIX CONTROL ##################################################
-    function Player(name, size) {
+    function Player(name) {
         this.name = name;
         this.matrix = new Matrix(ctrl.m_size, ctrl.m_size, [[1, 0], [0, 1]], 0, 0);
         this.score = 0;
@@ -117,6 +121,9 @@ define(['matrix','painter'], function (Matrix, painter) {
                 painter.drawMatrices(ctrl);
                 painter.drawPlayerData(ctrl);
                 painter.drawTurn(ctrl.turn);
+                break;
+            case "dc":
+                painter.drawDisconnect();
                 break;
         }
     };

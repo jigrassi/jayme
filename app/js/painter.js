@@ -48,6 +48,13 @@ define([],function() {
             ctx.restore();
         },
 
+        drawDisconnect: function() {
+            ctx.save();
+            ctx.font = "40px Helvetica";
+            ctx.fillText('Your opponent has left the game.', canvas.width/2, canvas.height/2);
+            ctx.restore();
+        },
+
         defaultStyles: function() {
             ctx.fillStyle = "#000000";
             ctx.font = "24px Helvetica";

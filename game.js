@@ -47,11 +47,17 @@ var game = {
     },
 
     // exit protocol
-    exit: function(socket) {
+    exit: function(socket, socketlist) {
         // disconnecting client is the waiter, remove it from wait bench
         if(this.waiter === socket.id) {
             this.waiter = -1;
+        } else {
+            var opp = this.matches[socket.id];
+            if(socketlist[opp] !== undefined) {
+                socketlist[opp].emit('dc', {});
+            }
         }
+
     },
 
     // generate matrix values
