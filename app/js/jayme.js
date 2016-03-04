@@ -7,23 +7,45 @@ define(['matrix','painter'], function (Matrix, painter) {
     canvas.width = w.innerWidth;
     canvas.height = w.innerHeight;
     painter.defaultStyles();
+    var ctrl;   // main game object
 
     requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
     if (document.readyState === "complete") { prepareEventHandlers(); }
 
-    function Player(name) {
+    // SOCKETS ##################################################
+
+    var socket = io();
+
+    socket.on('matched', function(data) {
+        // matched... initialize everything
+        ctrl = new Ctrl(genMatrices(data.matrices, data.m_size), data.m_size, data.turn);
+        var players = [new Player("You"), new Player("Opponent")];
+        players[0].matrix.posx = 210;
+        players[0].matrix.posy = 400;
+        players[1].matrix.posx = 460;
+        players[1].matrix.posy = 400;
+        ctrl.players = players;
+
+        setState("playing");
+    });
+
+    socket.on('move', function(move) {
+        ctrl.update(move);
+    });
+
+    // MATRIX CONTROL ##################################################
+    function Player(name, size) {
         this.name = name;
-        this.matrix = new Matrix(SIZE, SIZE, [[1, 0], [0, 1]], 0, 0);
+        this.matrix = new Matrix(ctrl.m_size, ctrl.m_size, [[1, 0], [0, 1]], 0, 0);
         this.score = 0;
     };
 
-    // MATRIX CONTROL ##################################################
-    function Ctrl(matrices, size, players) {
+    function Ctrl(matrices, size, turn) {
         this.matrices = matrices;
         this.m_size = size;
-        this.players = players;
-        this.turn = 0; // alternates between 0 and 1
+        this.turn = turn; // alternates between 0 and 1
+        this.players = [];
     };
 
     Ctrl.prototype.push = function(matrix) {
@@ -46,10 +68,11 @@ define(['matrix','painter'], function (Matrix, painter) {
         }
     };
 
-    Ctrl.prototype.arrange = function(f) {
-        // call the function rearrange matrices on the canvas
-        f(this.matrices);
-    }
+    Ctrl.prototype.update = function(m_id) {
+        this.players[this.turn].matrix.mult(this.matrices[m_id]);
+        this.pop(m_id);
+        this.turn = (this.turn + 1) % this.players.length
+    };
 
     // CLICKING #######################################################
 
@@ -65,70 +88,62 @@ define(['matrix','painter'], function (Matrix, painter) {
                 x: e.pageX - canvasPosition.x,
                 y: e.pageY - canvasPosition.y
             };
+            if(gstate == "playing" && ctrl.turn == 0) {
+                m_id = ctrl.select(mouse.x, mouse.y);
 
-            m_id = ctrl.select(mouse.x, mouse.y);
-
-            if(m_id || m_id == 0) {
-                console.log(ctrl.players[ctrl.turn].matrix);
-                ctrl.players[ctrl.turn].matrix.mult(ctrl.matrices[m_id]);
-                ctrl.pop(m_id);
-                ctrl.turn = (ctrl.turn + 1) % ctrl.players.length
+                if(m_id || m_id == 0) {
+                    ctrl.update(m_id);
+                }
+                socket.emit('move', m_id);
             }
         }, false);
     }
 
     // MAIN LOOP STUFF ##############################################
+    var gstate = "waiting";
+
+    function setState(state) {
+        gstate = state;
+    }
 
     // Draw everything
     var render = function () {
         painter.drawBG();
-        painter.drawMatrices(ctrl);
-        painter.drawPlayerData(ctrl);
+        switch(gstate) {
+            case "waiting":
+                painter.drawWaiting();
+                break;
+            case "playing":
+                painter.drawMatrices(ctrl);
+                painter.drawPlayerData(ctrl);
+                painter.drawTurn(ctrl.turn);
+                break;
+        }
     };
 
-    function genMatrixVals(size) {
-        var m = [];
-        for(var k = 0; k < size; k++) {
-            m.push([]);
-            for(j = 0; j < size; j++) {
-                m[k].push(Math.floor(Math.random() * 5) - 1);
-            }
-        }
-        return m;
-    }
-
-    function genMatrices() {
-        var matrices = [];
-        var rowSize = Math.ceil(N / 2);
-        for(var i = 0; i < N; i++) {
-            matrices.push(new Matrix(SIZE, SIZE, genMatrixVals(SIZE),
-                          100 + 150 * (i % rowSize), 50 + 150 * Math.floor(i / rowSize)));
+    function genMatrices(matrices, m_size) {
+        var rowSize = Math.ceil(matrices.length / 2);
+        for(var i = 0; i < matrices.length; i++) {
+            matrices[i] = new Matrix(m_size, m_size, matrices[i],
+                          100 + 150 * (i % rowSize), 50 + 150 * Math.floor(i / rowSize));
         }
         return matrices;
     }
 
     // The main game loop
     var main = function () {
-        var now = Date.now();
-        var delta = now - then;
+        // var now = Date.now();
+        // var delta = now - then;
 
-        //update(delta / 1000);
+        // update(delta / 1000);
         render();
 
-        then = now;
+        // then = now;
 
         requestAnimationFrame(main);
     };
 
-    var N = 8;
-    var SIZE = 2;
-    var players = [new Player("Adam"), new Player("Yibo")];
-    players[0].matrix.posx = 210;
-    players[0].matrix.posy = 400;
-    players[1].matrix.posx = 460;
-    players[1].matrix.posy = 400;
-    ctrl = new Ctrl(genMatrices(), SIZE, players);
-    var then = Date.now();
+    // var then = Date.now();
 
     function run() {
         main();

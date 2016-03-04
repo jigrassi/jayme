@@ -31,6 +31,23 @@ define([],function() {
             ctx.fillText(ctrl.players[1].score, 500, 600);
         },
 
+        drawWaiting: function() {
+            ctx.save();
+            ctx.font = "40px Helvetica";
+            ctx.fillText('Looking for opponent...', canvas.width/2, canvas.height/2);
+            ctx.restore();
+        },
+
+        drawTurn: function(id) {
+            ctx.save();
+            if(id == 0) {
+                ctx.fillText('Your Turn', 380, 310);
+            } else {
+                ctx.fillText('Opponent\'s Turn', 380, 310);
+            }
+            ctx.restore();
+        },
+
         defaultStyles: function() {
             ctx.fillStyle = "#000000";
             ctx.font = "24px Helvetica";
