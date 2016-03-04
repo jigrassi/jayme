@@ -40,6 +40,8 @@ router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });   
 });
 
+var exec = require('child_process').exec;
+
 // receive json from git webhook
 router.route('/push').post(function(req, res) {
     exec('git pull && sleep 5 && pm2 restart app', function (error, stdout, stderr) {
