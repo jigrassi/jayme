@@ -19,15 +19,12 @@ define(['matrix','painter'], function (Matrix, painter) {
 
     socket.on('matched', function(data) {
         // matched... initialize everything
-        ctrl = new Ctrl(genMatrices(data.matrices, data.m_size), data.m_size, data.turn);
-        var players = [new Player("You"), new Player("Opponent")];
-        players[0].matrix.posx = 210;
-        players[0].matrix.posy = 400;
-        players[1].matrix.posx = 460;
-        players[1].matrix.posy = 400;
-        ctrl.players = players;
-
+        if(data.rematch != true) {
+            initObjects();
+        }
+        setObjects(data);
         setState("playing");
+        overSent = false;
     });
 
     socket.on('move', function(move) {
@@ -44,6 +41,28 @@ define(['matrix','painter'], function (Matrix, painter) {
         this.matrix = new Matrix(ctrl.m_size, ctrl.m_size, [[1, 0], [0, 1]], 0, 0);
         this.score = 0;
     };
+
+    function initObjects() {
+        ctrl = new Ctrl([], 0, 0);
+        var players = [new Player("You"), new Player("Opponent")];
+        players[0].matrix.posx = 210;
+        players[0].matrix.posy = 400;
+        players[1].matrix.posx = 460;
+        players[1].matrix.posy = 400;
+        ctrl.players = players;
+    }
+
+    function setObjects(data) {
+        ctrl.matrices = genMatrices(data.matrices, data.m_size);
+        ctrl.m_size = data.m_size;
+        ctrl.turn = data.turn;
+        ctrl.players[0].matrix.rows = data.m_size;
+        ctrl.players[0].matrix.cols = data.m_size;
+        ctrl.players[1].matrix.rows = data.m_size;
+        ctrl.players[1].matrix.cols = data.m_size;
+        ctrl.players[0].matrix.vals = [[1, 0], [0, 1]];
+        ctrl.players[1].matrix.vals = [[1, 0], [0, 1]];
+    }
 
     function Ctrl(matrices, size, turn) {
         this.matrices = matrices;
@@ -126,6 +145,7 @@ define(['matrix','painter'], function (Matrix, painter) {
                 painter.drawDisconnect();
                 break;
         }
+        
     };
 
     function genMatrices(matrices, m_size) {
@@ -137,12 +157,24 @@ define(['matrix','painter'], function (Matrix, painter) {
         return matrices;
     }
 
+    function gameOver() {
+        if(ctrl.players[0].matrix.trace() > ctrl.players[1].matrix.trace()) {
+            ctrl.players[0].score += 1;
+        } else if (ctrl.players[0].matrix.trace() < ctrl.players[1].matrix.trace()) {
+            ctrl.players[1].score += 1;
+        } else {
+            ctrl.players[0].score += 0.5;
+            ctrl.players[1].score += 0.5;
+        }
+        socket.emit('over', {});
+    }
     // The main game loop
+    var overSent = false;
     var main = function () {
-        // var now = Date.now();
-        // var delta = now - then;
-
-        // update(delta / 1000);
+        if(gstate === "playing" && overSent == false && ctrl.matrices.length == 0) {
+            overSent = true;
+            gameOver();
+        }
         render();
 
         // then = now;

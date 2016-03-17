@@ -27,6 +27,10 @@ io.on('connection', function(socket){
 
     socket.on('disconnect', function() {
         game.exit(socket, io.sockets.connected);
+    });
+
+    socket.on('over', function() {
+        game.rematch(socket, io.sockets.connected);
     })
 });
 

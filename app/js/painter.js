@@ -22,9 +22,13 @@ define(function() {
         drawPlayerData: function(ctrl) {
             ctx.fillText(ctrl.players[0].name, 250, 350);
             ctrl.players[0].matrix.draw(ctx);
+            ctx.fillText("Trace: ", 200, 550);
+            ctx.fillText("Score: ", 200, 600);
             ctx.fillText(ctrl.players[0].matrix.trace(), 250, 550);
             ctx.fillText(ctrl.players[0].score, 250, 600);
 
+            ctx.fillText("Trace: ", 450, 550);
+            ctx.fillText("Score: ", 450, 600);
             ctx.fillText(ctrl.players[1].name, 500, 350);
             ctrl.players[1].matrix.draw(ctx);
             ctx.fillText(ctrl.players[1].matrix.trace(), 500, 550);

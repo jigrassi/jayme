@@ -1,9 +1,40 @@
 var game = {
     waiter: -1,    // waiting player
     matches: {},    // matching reference table
+    rematches: {},
     SIZE: 2,
-    N: 8,
+    N: 2,
 
+    rematch: function(socket, socketlist) {
+        var you = socket.id;
+        var opp = this.matches[you];
+        if(opp in this.rematches) {
+            this.reset(you, opp, socketlist, true);
+            delete this.rematches[opp];
+        } else {
+            this.rematches[you] = true;
+        }
+    },
+
+    reset: function(you, opp, socketlist, rematch) {
+        // randomize game board
+        var turn = Math.floor(Math.random() * 2);
+        var matrices = this.genN();
+
+        socketlist[you].emit('matched', {
+            turn: turn,
+            matrices: matrices,
+            m_size: this.SIZE,
+            rematch: rematch
+        });
+
+        socketlist[opp].emit('matched', {
+            turn: (turn + 1) % 2,
+            matrices: matrices,
+            m_size: this.SIZE,
+            rematch: rematch
+        });
+    },
     // entry protocol
     join: function(newsocket, socketlist) {
         var you = newsocket.id;
@@ -15,22 +46,7 @@ var game = {
             this.waiter = -1;
             this.matches[opp] = you;
             this.matches[you] = opp;
-
-            // randomize game board
-            var turn = Math.floor(Math.random() * 2);
-            var matrices = this.genN();
-
-            socketlist[you].emit('matched', {
-                turn: turn,
-                matrices: matrices,
-                m_size: this.SIZE
-            });
-
-            socketlist[opp].emit('matched', {
-                turn: (turn + 1) % 2,
-                matrices: matrices,
-                m_size: this.SIZE
-            });
+            this.reset(you, opp, socketlist, false);
         }
 
         // no one is waiting, start waiting
