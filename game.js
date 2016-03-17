@@ -2,7 +2,7 @@ var game = {
     waiter: -1,    // waiting player
     matches: {},    // matching reference table
     rematches: {},
-    SIZE: 2,
+    SIZE: 8,
     N: 2,
 
     rematch: function(socket, socketlist) {
