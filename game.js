@@ -2,8 +2,8 @@ var game = {
     waiter: -1,    // waiting player
     matches: {},    // matching reference table
     rematches: {},
-    SIZE: 8,
-    N: 2,
+    SIZE: 2,
+    N: 8,
 
     rematch: function(socket, socketlist) {
         var you = socket.id;
