@@ -61,8 +61,8 @@ router.route('/push').post(function(req, res) {
 
 app.use('/api', router);
 
-http.listen(3000, function() {
-    console.log('app running in port 3000');
+http.listen(80, function() {
+    console.log('app running in port 80');
 })
 
 module.exports = app;
