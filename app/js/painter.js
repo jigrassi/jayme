@@ -46,6 +46,13 @@ define(function() {
             ctx.restore();
         },
 
+        drawHover: function(x, y, size) {
+            ctx.save();
+            ctx.fillStyle = '#ffcc99';
+            ctx.fillRect(x,y,size,size);
+            ctx.restore();
+        },
+
         drawPlayerWin: function(result) {
             if(result == 0) {
                 ctx.fillText("You Win!", 370, 313);

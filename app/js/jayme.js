@@ -28,6 +28,7 @@ define(['matrix','painter'], function (Matrix, painter) {
     });
 
     socket.on('move', function(move) {
+        ctrl.hover = -1;
         ctrl.update(move);
     });
 
@@ -70,6 +71,7 @@ define(['matrix','painter'], function (Matrix, painter) {
         this.turn = turn; // alternates between 0 and 1
         this.players = [];
         this.result = 0;
+        this.hover = -1;
     };
 
     Ctrl.prototype.push = function(matrix) {
@@ -116,11 +118,28 @@ define(['matrix','painter'], function (Matrix, painter) {
                 m_id = ctrl.select(mouse.x, mouse.y);
 
                 if(m_id || m_id == 0) {
+                    ctrl.hover = -1;
                     ctrl.update(m_id);
                 }
                 socket.emit('move', m_id);
             }
         }, false);
+
+        canvas.addEventListener('mousemove', function(e) {
+            var mouse = {
+                x: e.pageX - canvasPosition.x,
+                y: e.pageY - canvasPosition.y
+            };
+            
+            if(gstate == "playing" && ctrl.turn == 0) {
+                m_id = ctrl.select(mouse.x, mouse.y);
+                if(m_id || m_id == 0) {
+                    ctrl.hover = m_id;
+                } else {
+                    ctrl.hover = -1;
+                }
+            }
+        });
     }
 
     // MAIN LOOP STUFF ##############################################
@@ -138,6 +157,9 @@ define(['matrix','painter'], function (Matrix, painter) {
                 painter.drawWaiting();
                 break;
             case "playing":
+                if(ctrl.hover >= 0) {
+                    painter.drawHover(ctrl.matrices[m_id].posx, ctrl.matrices[m_id].posy,80);
+                }
                 painter.drawMatrices(ctrl);
                 painter.drawPlayerData(ctrl);
                 if(overSent == false) {
