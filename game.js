@@ -9,7 +9,9 @@ var game = {
         var you = socket.id;
         var opp = this.matches[you];
         if(opp in this.rematches) {
-            this.reset(you, opp, socketlist, true);
+            setTimeout(function() {
+                game.reset(you, opp, socketlist, true)
+            }, 3000);
             delete this.rematches[opp];
         } else {
             this.rematches[you] = true;

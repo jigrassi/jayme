@@ -4,8 +4,8 @@ define(['matrix','painter'], function (Matrix, painter) {
     var w = window;
     var canvas = document.getElementById("game");
     var ctx = canvas.getContext("2d");
-    canvas.width = 1024;
-    canvas.height = 768;
+    canvas.width = 760;
+    canvas.height = 650;
     painter.defaultStyles();
     var ctrl;   // main game object
 
@@ -47,7 +47,7 @@ define(['matrix','painter'], function (Matrix, painter) {
         var players = [new Player("You"), new Player("Opponent")];
         players[0].matrix.posx = 210;
         players[0].matrix.posy = 400;
-        players[1].matrix.posx = 460;
+        players[1].matrix.posx = 440;
         players[1].matrix.posy = 400;
         ctrl.players = players;
     }
@@ -69,6 +69,7 @@ define(['matrix','painter'], function (Matrix, painter) {
         this.m_size = size;
         this.turn = turn; // alternates between 0 and 1
         this.players = [];
+        this.result = 0;
     };
 
     Ctrl.prototype.push = function(matrix) {
@@ -139,7 +140,11 @@ define(['matrix','painter'], function (Matrix, painter) {
             case "playing":
                 painter.drawMatrices(ctrl);
                 painter.drawPlayerData(ctrl);
-                painter.drawTurn(ctrl.turn);
+                if(overSent == false) {
+                    painter.drawTurn(ctrl.turn);
+                } else {
+                    painter.drawPlayerWin(ctrl.result);
+                }
                 break;
             case "dc":
                 painter.drawDisconnect();
@@ -160,11 +165,14 @@ define(['matrix','painter'], function (Matrix, painter) {
     function gameOver() {
         if(ctrl.players[0].matrix.trace() > ctrl.players[1].matrix.trace()) {
             ctrl.players[0].score += 1;
+            ctrl.result = 0;
         } else if (ctrl.players[0].matrix.trace() < ctrl.players[1].matrix.trace()) {
             ctrl.players[1].score += 1;
+            ctrl.result = 1;
         } else {
             ctrl.players[0].score += 0.5;
             ctrl.players[1].score += 0.5;
+            ctrl.result = 0.5;
         }
         socket.emit('over', {});
     }
@@ -176,9 +184,6 @@ define(['matrix','painter'], function (Matrix, painter) {
             gameOver();
         }
         render();
-
-        // then = now;
-
         requestAnimationFrame(main);
     };
 

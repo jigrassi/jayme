@@ -20,19 +20,40 @@ define(function() {
         },
 
         drawPlayerData: function(ctrl) {
-            ctx.fillText(ctrl.players[0].name, 250, 350);
-            ctrl.players[0].matrix.draw(ctx);
-            ctx.fillText("Trace: ", 200, 550);
-            ctx.fillText("Score: ", 200, 600);
-            ctx.fillText(ctrl.players[0].matrix.trace(), 250, 550);
-            ctx.fillText(ctrl.players[0].score, 250, 600);
+            ctx.save();
+            ctx.fillStyle = '#cce6ff';
+            ctx.fillRect(210,400,40,40);
+            ctx.fillRect(440,400,40,40);
+            ctx.fillRect(250,440,40,40);
+            ctx.fillRect(480,440,40,40);
 
-            ctx.fillText("Trace: ", 450, 550);
-            ctx.fillText("Score: ", 450, 600);
-            ctx.fillText(ctrl.players[1].name, 500, 350);
+            ctx.fillStyle = '#66b3ff';
+            ctx.fillText("Trace ", 250, 520);
+            ctx.fillText(ctrl.players[0].matrix.trace(), 250, 550);
+            ctx.fillText("Trace ", 485, 520);
+            ctx.fillText(ctrl.players[1].matrix.trace(), 485, 550);
+            ctx.fillStyle = '#000000';
+
+            ctrl.players[0].matrix.draw(ctx);
             ctrl.players[1].matrix.draw(ctx);
-            ctx.fillText(ctrl.players[1].matrix.trace(), 500, 550);
-            ctx.fillText(ctrl.players[1].score, 500, 600);
+            ctx.fillText(ctrl.players[0].name, 250, 350);
+            ctx.fillText(ctrl.players[1].name, 480, 350);
+
+            ctx.font = "50px Helvetica";
+            ctx.fillText(ctrl.players[1].score, 410, 600);
+            ctx.fillText(ctrl.players[0].score, 320, 600);
+            ctx.fillText("-", 365, 600);
+            ctx.restore();
+        },
+
+        drawPlayerWin: function(result) {
+            if(result == 0) {
+                ctx.fillText("You Win!", 370, 313);
+            } else if(result == 1) {
+                ctx.fillText("You Lose!", 366, 313);
+            } else {
+                ctx.fillText("It's a Tie!", 380, 313);
+            }
         },
 
         drawWaiting: function() {
@@ -45,9 +66,9 @@ define(function() {
         drawTurn: function(id) {
             ctx.save();
             if(id == 0) {
-                ctx.fillText('Your Turn', 380, 310);
+                ctx.fillText('Your Turn', 370, 313);
             } else {
-                ctx.fillText('Opponent\'s Turn', 380, 310);
+                ctx.fillText('Opponent\'s Turn', 366, 313);
             }
             ctx.restore();
         },
