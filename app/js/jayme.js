@@ -117,7 +117,7 @@ define(['matrix','painter'], function (Matrix, painter) {
             if(gstate == "playing" && ctrl.turn == 0) {
                 m_id = ctrl.select(mouse.x, mouse.y);
 
-                if(m_id || m_id == 0) {
+                if(m_id || m_id == 0) { //interprets 0 as null
                     ctrl.hover = -1;
                     ctrl.update(m_id);
                 }
