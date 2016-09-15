@@ -1,68 +1,18 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+module.exports = function(io) {
+    var game = require('./game.js');
 
-var game = require('./game.js');
-// middleware
-app.use(function(req, res, next) {
-    console.log(`${req.method} request for '${req.url}`);
-    next();
-});
+    io.on('connection', function(socket){
+        game.join(socket, io.sockets.connected);
+        socket.on('move', function(move) {
+            game.move(socket, io.sockets.connected, move);
+        });
 
-var bodyParser = require('body-parser');
+        socket.on('disconnect', function() {
+            game.exit(socket, io.sockets.connected);
+        });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.use(express.static('./app'));
-
-// socket.io
-// =============================================================================
-io.on('connection', function(socket){
-    game.join(socket, io.sockets.connected);
-    socket.on('move', function(move) {
-        game.move(socket, io.sockets.connected, move);
+        socket.on('over', function() {
+            game.rematch(socket, io.sockets.connected);
+        })
     });
-
-    socket.on('disconnect', function() {
-        game.exit(socket, io.sockets.connected);
-    });
-
-    socket.on('over', function() {
-        game.rematch(socket, io.sockets.connected);
-    })
-});
-
-// router
-// =============================================================================
-
-var router = express.Router();              // get an instance of the express Router
-
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-    res.json({ message: 'hooray! welcome to our api!' });   
-});
-
-var exec = require('child_process').exec;
-
-// receive json from git webhook
-router.route('/push').post(function(req, res) {
-    console.log(req);
-    exec('git pull && sleep 5 && npm install && pm2 restart app', function (error, stdout, stderr) {
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
-        if (error !== null) {
-          console.log('exec error: ' + error);
-        }
-    });
-    res.sendStatus(200);
-});
-
-app.use('/api', router);
-
-http.listen(80, function() {
-    console.log('app running in port 80');
-})
-
-module.exports = app;
+}
