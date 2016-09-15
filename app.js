@@ -1,4 +1,4 @@
-module.exports = function(io) {
+module.exports = function(router, io) {
     var game = require('./game.js');
 
     io.on('connection', function(socket){
